@@ -1,0 +1,6 @@
+[package]
+name = "ghcn-daily"
+version = "0.1.0"
+authors = ["Hobofan <goisser94@gmail.com>"]
+
+[dependencies]
