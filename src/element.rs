@@ -61,12 +61,25 @@ impl DlyLine {
     // TYPED
     //
 
-    pub fn element(line: &str) -> Element {
-        return Element::from_str(Self::element_raw(line)).unwrap();
+    pub fn element(line: &str) -> Result<Element, ()> {
+        return Element::from_str(Self::element_raw(line));
     }
 
-    pub fn measurement(line: &str, index: usize) -> Measurement {
-        return Measurement::from_str(Self::measurement_flag_raw(line, index)).unwrap();
+    pub fn value(line: &str, index: usize) -> Result<Option<isize>, ::std::num::ParseIntError> {
+        let val: isize = try!(Self::value_raw(line, index).parse());
+
+        match val {
+            -9999 => Ok(None),
+            other => Ok(Some(other))
+        }
+    }
+
+    pub fn measurement(line: &str, index: usize) -> Result<Measurement, ()> {
+        return Measurement::from_str(Self::measurement_flag_raw(line, index));
+    }
+
+    pub fn source(line: &str, index: usize) -> Result<Source, ()> {
+        return Source::from_str(Self::source_flag_raw(line, index));
     }
 }
 
@@ -131,7 +144,6 @@ impl FromStr for Measurement {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Measurement, ()> {
-        println!("{:?}", s);
         match s {
             " " => Ok(Measurement::None),
             "B" => Ok(Measurement::TwoTotals),
@@ -148,59 +160,6 @@ impl FromStr for Measurement {
     }
 }
 
-// Unimplmented sources:
-//
-//            Blank = No source (i.e., data value missing)
-//            0     = U.S. Cooperative Summary of the Day (NCDC DSI-3200)
-//            6     = CDMP Cooperative Summary of the Day (NCDC DSI-3206)
-//            7     = U.S. Cooperative Summary of the Day -- Transmitted
-// 	           via WxCoder3 (NCDC DSI-3207)
-//            A     = U.S. Automated Surface Observing System (ASOS)
-//                    real-time data (since January 1, 2006)
-// 	   a     = Australian data from the Australian Bureau of Meteorology
-//            B     = U.S. ASOS data for October 2000-December 2005 (NCDC
-//                    DSI-3211)
-// 	   b     = Belarus update
-// 	   C     = Environment Canada
-// 	   E     = European Climate Assessment and Dataset (Klein Tank
-// 	           et al., 2002)
-//            F     = U.S. Fort data
-//            G     = Official Global Climate Observing System (GCOS) or
-//                    other government-supplied data
-//            H     = High Plains Regional Climate Center real-time data
-//            I     = International collection (non U.S. data received through
-// 	           personal contacts)
-//            K     = U.S. Cooperative Summary of the Day data digitized from
-// 	           paper observer forms (from 2011 to present)
-//            M     = Monthly METAR Extract (additional ASOS data)
-// 	   N     = Community Collaborative Rain, Hail,and Snow (CoCoRaHS)
-// 	   Q     = Data from several African countries that had been
-// 	           "quarantined", that is, withheld from public release
-// 		   until permission was granted from the respective
-// 	           meteorological services
-//            R     = NCEI Reference Network Database (Climate Reference Network
-// 	           and Regional Climate Reference Network)
-// 	   r     = All-Russian Research Institute of Hydrometeorological
-// 	           Information-World Data Center
-//            S     = Global Summary of the Day (NCDC DSI-9618)
-//                    NOTE: "S" values are derived from hourly synoptic reports
-//                    exchanged on the Global Telecommunications System (GTS).
-//                    Daily values derived in this fashion may differ significantly
-//                    from "true" daily data, particularly for precipitation
-//                    (i.e., use with caution).
-// 	   s     = China Meteorological Administration/National Meteorological Information Center/
-// 	           Climatic Data Center (http://cdc.cma.gov.cn)
-//            T     = SNOwpack TELemtry (SNOTEL) data obtained from the U.S.
-// 	           Department of Agriculture's Natural Resources Conservation Service
-// 	   U     = Remote Automatic Weather Station (RAWS) data obtained
-// 	           from the Western Regional Climate Center
-// 	   u     = Ukraine update
-// 	   W     = WBAN/ASOS Summary of the Day from NCDC's Integrated
-// 	           Surface Data (ISD).
-//            X     = U.S. First-Order Summary of the Day (NCDC DSI-3210)
-// 	   Z     = Datzilla official additions or replacements
-// 	   z     = Uzbekistan update
-
 /// Different sources.
 ///
 /// There are twenty nine possible values
@@ -211,7 +170,58 @@ impl FromStr for Measurement {
 /// priority order (from highest to lowest):
 ///
 /// Z,R,0,6,C,X,W,K,7,F,B,M,r,E,z,u,b,s,a,G,Q,I,A,N,T,U,H,S
+///
+/// Unimplmented sources:
+///
+/// 0 = U.S. Cooperative Summary of the Day (NCDC DSI-3200)
+/// 6 = CDMP Cooperative Summary of the Day (NCDC DSI-3206)
+/// 7 = U.S. Cooperative Summary of the Day -- Transmitted via WxCoder3 (NCDC DSI-3207)
+/// A = U.S. Automated Surface Observing System (ASOS) real-time data (since January 1, 2006)
+/// a = Australian data from the Australian Bureau of Meteorology
+/// B = U.S. ASOS data for October 2000-December 2005 (NCDC DSI-3211)
+/// b = Belarus update
+/// C = Environment Canada
+/// F = U.S. Fort data
+/// G = Official Global Climate Observing System (GCOS) or other government-supplied data
+/// H = High Plains Regional Climate Center real-time data
+/// I = International collection (non U.S. data received through personal contacts)
+/// K = U.S. Cooperative Summary of the Day data digitized from paper observer forms (from 2011 to present)
+/// M = Monthly METAR Extract (additional ASOS data)
+/// N = Community Collaborative Rain, Hail,and Snow (CoCoRaHS)
+/// Q = Data from several African countries that had been "quarantined", that is, withheld from public release
+///     until permission was granted from the respective meteorological services
+/// R = NCEI Reference Network Database (Climate Reference Network and Regional Climate Reference Network)
+/// r = All-Russian Research Institute of Hydrometeorological Information-World Data Center
+/// S = Global Summary of the Day (NCDC DSI-9618)
+///     NOTE: "S" values are derived from hourly synoptic reports
+///     exchanged on the Global Telecommunications System (GTS).
+///     Daily values derived in this fashion may differ significantly
+///     from "true" daily data, particularly for precipitation
+///     (i.e., use with caution).
+/// s = China Meteorological Administration/National Meteorological Information Center/ Climatic Data Center (http:///cdc.cma.gov.cn)
+/// T = SNOwpack TELemtry (SNOTEL) data obtained from the U.S. Department of Agriculture's Natural Resources Conservation Service
+/// U = Remote Automatic Weather Station (RAWS) data obtained from the Western Regional Climate Center
+/// u = Ukraine update
+/// W = WBAN/ASOS Summary of the Day from NCDC's Integrated Surface Data (ISD).
+/// X = U.S. First-Order Summary of the Day (NCDC DSI-3210)
+/// Z = Datzilla official additions or replacements
+/// z = Uzbekistan update
 #[derive(Debug, Copy, Clone)]
 pub enum Source {
+    /// Blank = No source (i.e., data value missing)
+    None,
+    /// E = European Climate Assessment and Dataset (Klein Tank et al., 2002)
+    ECAandD,
+}
 
+impl FromStr for Source {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Source, ()> {
+        match s {
+            " " => Ok(Source::None),
+            "E" => Ok(Source::ECAandD),
+            _ => Err(()),
+        }
+    }
 }

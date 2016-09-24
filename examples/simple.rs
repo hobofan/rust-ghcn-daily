@@ -21,7 +21,7 @@ fn main() {
         // if line_length == 1 {
         //     continue;
         // }
-        println!("{:?} - {:?} {:?}", DlyLine::station_id_raw(&l), DlyLine::measurement(&l, 1), DlyLine::value_raw(&l, 1));
+        println!("{:?} - {:?} {:?}", DlyLine::station_id_raw(&l), DlyLine::source(&l, 1), DlyLine::value_raw(&l, 1));
 
         // println!("{} - {}", id, file_name);
     }

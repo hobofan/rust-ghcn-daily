@@ -1,6 +1,14 @@
 [package]
 name = "ghcn-daily"
-version = "0.1.0"
-authors = ["Hobofan <goisser94@gmail.com>"]
+version = "0.0.1"
+authors = ["Maximilian Goisser <goisser94@gmail.com>"]
+
+repository = "https://github.com/hobofan/rust-ghcn-daily"
+homepage = "https://github.com/hobofan/rust-ghcn-daily"
+
+keywords = ["ghcn", "weather", "meteorology", "dataset"]
+
+readme = "README.md"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
