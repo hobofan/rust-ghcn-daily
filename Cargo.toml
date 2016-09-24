@@ -1,5 +1,6 @@
 [package]
 name = "ghcn-daily"
+description = "Parser for the GHCN-Daily dataset"
 version = "0.0.1"
 authors = ["Maximilian Goisser <goisser94@gmail.com>"]
 
