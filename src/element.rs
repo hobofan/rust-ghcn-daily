@@ -161,10 +161,6 @@ impl DlyLine {
 ///         where * corresponds to a code for ground cover
 ///         and # corresponds to a code for soil depth.
 ///         See SN*# for ground cover and depth codes.
-/// - TAVG = Average temperature (tenths of degrees C)
-///         [Note that TAVG from source 'S' corresponds
-///         to an average for the period ending at
-///         2400 UTC rather than local midnight]
 /// - THIC = Thickness of ice on water (tenths of mm)
 /// - TOBS = Temperature at the time of observation (tenths of degrees C)
 /// - TSUN = Daily total sunshine (minutes)
@@ -228,8 +224,13 @@ pub enum Element {
     Snowdepth,
     /// TMAX = Maximum temperature (tenths of degrees C)
     MaxTemp,
-    // TMIN = Minimum temperature (tenths of degrees C)
+    /// TMIN = Minimum temperature (tenths of degrees C)
     MinTemp,
+    /// TAVG = Average temperature (tenths of degrees C)
+    ///         [Note that TAVG from source 'S' corresponds
+    ///         to an average for the period ending at
+    ///         2400 UTC rather than local midnight]
+    AvgTemp,
 }
 
 impl FromStr for Element {
@@ -242,6 +243,7 @@ impl FromStr for Element {
             "SNWD" => Ok(Element::Snowdepth),
             "TMAX" => Ok(Element::MaxTemp),
             "TMIN" => Ok(Element::MinTemp),
+            "TAVG" => Ok(Element::AvgTemp),
             _ => Err(()),
             // TODO: implement "Other" type for other 4 character codes
         }
@@ -390,12 +392,6 @@ impl FromStr for Quality {
 ///     until permission was granted from the respective meteorological services
 /// R = NCEI Reference Network Database (Climate Reference Network and Regional Climate Reference Network)
 /// r = All-Russian Research Institute of Hydrometeorological Information-World Data Center
-/// S = Global Summary of the Day (NCDC DSI-9618)
-///     NOTE: "S" values are derived from hourly synoptic reports
-///     exchanged on the Global Telecommunications System (GTS).
-///     Daily values derived in this fashion may differ significantly
-///     from "true" daily data, particularly for precipitation
-///     (i.e., use with caution).
 /// s = China Meteorological Administration/National Meteorological Information Center/ Climatic Data Center (http:///cdc.cma.gov.cn)
 /// T = SNOwpack TELemtry (SNOTEL) data obtained from the U.S. Department of Agriculture's Natural Resources Conservation Service
 /// U = Remote Automatic Weather Station (RAWS) data obtained from the Western Regional Climate Center
@@ -410,6 +406,13 @@ pub enum Source {
     None,
     /// E = European Climate Assessment and Dataset (Klein Tank et al., 2002)
     ECAandD,
+    /// S = Global Summary of the Day (NCDC DSI-9618)
+    ///     NOTE: "S" values are derived from hourly synoptic reports
+    ///     exchanged on the Global Telecommunications System (GTS).
+    ///     Daily values derived in this fashion may differ significantly
+    ///     from "true" daily data, particularly for precipitation
+    ///     (i.e., use with caution).
+    DSI9618,
 }
 
 impl FromStr for Source {
@@ -419,6 +422,7 @@ impl FromStr for Source {
         match s {
             " " => Ok(Source::None),
             "E" => Ok(Source::ECAandD),
+            "S" => Ok(Source::DSI9618),
             _ => Err(()),
         }
     }
