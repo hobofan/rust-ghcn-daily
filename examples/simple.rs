@@ -21,7 +21,12 @@ fn main() {
         // if line_length == 1 {
         //     continue;
         // }
-        println!("{:?} - {:?} {:?}", DlyLine::station_id_raw(&l), DlyLine::source(&l, 1), DlyLine::value_raw(&l, 1));
+        println!("{:?} {:?} {:?} - {:?} {:?}",
+                    DlyLine::station_id_raw(&l),
+                    DlyLine::year_raw(&l),
+                    DlyLine::month_raw(&l),
+                    DlyLine::source(&l, 1),
+                    DlyLine::value(&l, 1).unwrap());
 
         // println!("{} - {}", id, file_name);
     }
